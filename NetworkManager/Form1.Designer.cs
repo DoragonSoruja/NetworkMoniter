@@ -34,6 +34,7 @@
             // 
             // resultBox
             // 
+            this.resultBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.resultBox.Location = new System.Drawing.Point(40, 69);
             this.resultBox.Name = "resultBox";
             this.resultBox.Size = new System.Drawing.Size(438, 356);
