@@ -18,14 +18,14 @@ namespace NetworkManager
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-            BytesSentAndReceived();
         }
 
-        static void BytesSentAndReceived()
+        public static void BytesSentAndReceived(RichTextBox resultBox)
         {
+            resultBox.Clear();
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
-                Console.WriteLine("Failed");
+                resultBox.Text += "Failed\n";
                 return;
             }
 
@@ -33,12 +33,10 @@ namespace NetworkManager
 
             foreach (NetworkInterface ni in interfaces)
             {
-                Console.WriteLine(ni.Description);
-                Console.WriteLine("    Bytes Sent: {0}", ni.GetIPv4Statistics().BytesSent);
-                Console.WriteLine("    Bytes Received: {0}", ni.GetIPv4Statistics().BytesReceived);
+                resultBox.Text += ni.Description + '\n';
+                resultBox.Text += "    Bytes Sent: {0}" + ni.GetIPv4Statistics().BytesSent + '\n';
+                resultBox.Text += "    Bytes Received: {0}" + ni.GetIPv4Statistics().BytesReceived + '\n';
             }
-
-            string filler = Console.ReadLine();
         }
     }
 }
