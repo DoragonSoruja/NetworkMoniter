@@ -20,7 +20,7 @@ namespace NetworkManager
             Application.Run(new Form1());
         }
 
-        public static void BytesSentAndReceived(RichTextBox resultBox, long[] startPoint = null)
+        public static void BytesSentAndReceived(RichTextBox resultBox, long[] startPoint)
         {
             resultBox.Clear();
             if (!NetworkInterface.GetIsNetworkAvailable())
@@ -33,20 +33,11 @@ namespace NetworkManager
 
             for(int x=0, y=0; x < interfaces.Length; x++, y+=2)
             {
-                if(startPoint == null)
-                {
-                    if(interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
-                    {
-                        resultBox.Text += interfaces[x].Name + '\n';
-                        resultBox.Text += "    Bytes Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent) + '\n';
-                        resultBox.Text += "    Bytes Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived) + "\n\n";
-                    }
-                }
-                else if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
+                if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
                 {
                     resultBox.Text += interfaces[x].Name + '\n';
-                    resultBox.Text += "    Bytes Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) + '\n';
-                    resultBox.Text += "    Bytes Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y+1]) + "\n\n";
+                    resultBox.Text += "    Mbs Sent: " + (((float)interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) / 1000000) + '\n';
+                    resultBox.Text += "    Mbs Received: " + (((float)interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y+1]) / 1000000 ) + "\n\n";
                 }
             }
         }
