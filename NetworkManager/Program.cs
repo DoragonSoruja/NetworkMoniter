@@ -20,7 +20,7 @@ namespace NetworkManager
             Application.Run(new Form1());
         }
 
-        public static void BytesSentAndReceived(RichTextBox resultBox)
+        public static void BytesSentAndReceived(RichTextBox resultBox, long[] startPoint = null)
         {
             resultBox.Clear();
             if (!NetworkInterface.GetIsNetworkAvailable())
@@ -31,13 +31,22 @@ namespace NetworkManager
 
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 
-            foreach (NetworkInterface ni in interfaces)
+            for(int x=0, y=0; x < interfaces.Length; x++, y+=2)
             {
-                if (ni.GetIPv4Statistics().BytesSent != 0 && ni.GetIPv4Statistics().BytesReceived != 0)
+                if(startPoint == null)
                 {
-                    resultBox.Text += ni.Description + '\n';
-                    resultBox.Text += "    Bytes Sent: " + ni.GetIPv4Statistics().BytesSent + '\n';
-                    resultBox.Text += "    Bytes Received: " + ni.GetIPv4Statistics().BytesReceived + '\n';
+                    if(interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
+                    {
+                        resultBox.Text += interfaces[x].Name + '\n';
+                        resultBox.Text += "    Bytes Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent) + '\n';
+                        resultBox.Text += "    Bytes Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived) + "\n\n";
+                    }
+                }
+                else if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
+                {
+                    resultBox.Text += interfaces[x].Name + '\n';
+                    resultBox.Text += "    Bytes Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) + '\n';
+                    resultBox.Text += "    Bytes Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y+1]) + "\n\n";
                 }
             }
         }
