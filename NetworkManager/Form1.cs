@@ -14,16 +14,23 @@ namespace NetworkManager
 {
     public partial class Form1 : Form
     {
+        bool clear = true;
+        long[] buffers = new long[0];
+
         public Form1()
         {
             InitializeComponent();
         }
 
+        private void Clear(object sender, EventArgs e)
+        {
+            resultBox.Clear();
+            clear = true;
+        }
+
         private void Stop_Click(object sender, EventArgs e)
         {
             startAndStop.Text = "Start";
-            resultBox.Clear();
-            resultBox.Text = "Stop_Click";
             startAndStop.Click -= new EventHandler(Stop_Click); 
             startAndStop.Click += new EventHandler(Start_Click);
         }
@@ -45,13 +52,17 @@ namespace NetworkManager
         private void ByteReader()
         {
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            long[] buffers = new long[interfaces.Length * 2];
-            int y = 0;
-            foreach (NetworkInterface x in interfaces)
+            if (clear)
             {
-                buffers[y] = x.GetIPv4Statistics().BytesSent;
-                buffers[y + 1] = x.GetIPv4Statistics().BytesReceived;
-                y += 2;
+                buffers = new long[interfaces.Length * 2];
+                int y = 0;
+                foreach (NetworkInterface x in interfaces)
+                {
+                    buffers[y] = x.GetIPv4Statistics().BytesSent;
+                    buffers[y + 1] = x.GetIPv4Statistics().BytesReceived;
+                    y += 2;
+                }
+                clear = !clear;
             }
             do
             {
