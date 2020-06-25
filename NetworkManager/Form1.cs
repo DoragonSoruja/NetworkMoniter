@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -35,20 +36,66 @@ namespace NetworkManager
             startAndStop.Click -= new EventHandler(Start_Click);
             startAndStop.Click += new EventHandler(Stop_Click);
 
+            resultBox.Clear();
+
+            Thread reader = new Thread(new ThreadStart(ByteReader));
+            reader.Start();
+        }
+
+        private void ByteReader()
+        {
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
             long[] buffers = new long[interfaces.Length * 2];
             int y = 0;
-            foreach(NetworkInterface x in interfaces)
+            foreach (NetworkInterface x in interfaces)
             {
                 buffers[y] = x.GetIPv4Statistics().BytesSent;
                 buffers[y + 1] = x.GetIPv4Statistics().BytesReceived;
                 y += 2;
             }
-            for (int x = 0; x < 10; x++)
+            do
             {
-                Program.BytesSentAndReceived(resultBox, buffers);
-                resultBox.Refresh();
-                System.Threading.Thread.Sleep(1000);
+                BytesSentAndReceived(buffers);
+                Thread.Sleep(1000);
+            } while (startAndStop.Text == "Stop");
+        }
+
+        private delegate void SafeCallDelegate(string text);
+
+        public void SetText(string text)
+        {
+            if (resultBox.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(SetText);
+                resultBox.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                resultBox.Text = text;
+            }
+        }
+
+        private void BytesSentAndReceived(long[] startPoint)
+        {
+            string tempText = "";
+
+            if (!NetworkInterface.GetIsNetworkAvailable())
+            {
+                resultBox.Text += "Failed\n";
+                return;
+            }
+
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            for (int x = 0, y = 0; x < interfaces.Length; x++, y += 2)
+            {
+                if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
+                {
+                    tempText += interfaces[x].Name + '\n';
+                    tempText += "    Mbs Sent: " + (((float)interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) / 1000000) + '\n';
+                    tempText += "    Mbs Received: " + (((float)interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y + 1]) / 1000000) + "\n\n";
+                    SetText(tempText);
+                }
             }
         }
     }
