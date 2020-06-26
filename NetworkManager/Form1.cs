@@ -16,6 +16,7 @@ namespace NetworkManager
     {
         bool clear = true;
         long[] buffers = new long[0];
+        Thread reader;
 
         public Form1()
         {
@@ -33,19 +34,20 @@ namespace NetworkManager
             startAndStop.Text = "Start";
             startAndStop.Click -= new EventHandler(Stop_Click); 
             startAndStop.Click += new EventHandler(Start_Click);
+            reader.Abort();
         }
 
         private void Start_Click(object sender, EventArgs e)
         {
             startAndStop.Text = "Stop";
-
+                
             startAndStop.Refresh();
             startAndStop.Click -= new EventHandler(Start_Click);
             startAndStop.Click += new EventHandler(Stop_Click);
 
             resultBox.Clear();
 
-            Thread reader = new Thread(new ThreadStart(ByteReader));
+            reader = new Thread(new ThreadStart(ByteReader));
             reader.Start();
         }
 
@@ -103,8 +105,8 @@ namespace NetworkManager
                 if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
                 {
                     tempText += interfaces[x].Name + '\n';
-                    tempText += "    Mbs Sent: " + (((float)interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) / 1000000) + '\n';
-                    tempText += "    Mbs Received: " + (((float)interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y + 1]) / 1000000) + "\n\n";
+                    tempText += "    Mbs Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) / (float)1000000 + '\n';
+                    tempText += "    Mbs Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y + 1]) / (float)1000000 + "\n\n";
                     SetText(tempText);
                 }
             }
