@@ -105,8 +105,8 @@ namespace NetworkManager
                 if (interfaces[x].GetIPv4Statistics().BytesSent != 0 && interfaces[x].GetIPv4Statistics().BytesReceived != 0)
                 {
                     tempText += interfaces[x].Name + '\n';
-                    tempText += "    Mbs Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) / (float)1000000 + '\n';
-                    tempText += "    Mbs Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y + 1]) / (float)1000000 + "\n\n";
+                    tempText += "    Bytes Sent: " + (interfaces[x].GetIPv4Statistics().BytesSent - startPoint[y]) + '\n';
+                    tempText += "    Bytes Received: " + (interfaces[x].GetIPv4Statistics().BytesReceived - startPoint[y + 1]) + "\n\n";
                     SetText(tempText);
                 }
             }

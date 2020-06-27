@@ -71,7 +71,7 @@
             this.Controls.Add(this.startAndStop);
             this.Controls.Add(this.resultBox);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Network Moniter";
             this.ResumeLayout(false);
 
         }
